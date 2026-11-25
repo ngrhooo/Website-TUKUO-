@@ -78,6 +78,25 @@
     <p>© 2026 TUKUO! — Made for good finds.</p>
   </footer>
 
+  <dialog class="product-dialog" id="product-dialog" aria-labelledby="detail-name">
+    <button class="detail-close" id="detail-close" type="button" aria-label="Tutup detail">×</button>
+    <div class="detail-layout">
+      <div class="detail-image-wrap"><img id="detail-image" src="" alt=""></div>
+      <div class="detail-copy">
+        <p class="eyebrow" id="detail-category"></p>
+        <h2 id="detail-name"></h2>
+        <p class="detail-price" id="detail-price"></p>
+        <p class="detail-description" id="detail-description"></p>
+        <dl class="detail-specs">
+          <div><dt>Ukuran</dt><dd id="detail-size"></dd></div>
+          <div><dt>Kondisi</dt><dd id="detail-condition"></dd></div>
+          <div><dt>Kategori</dt><dd id="detail-type"></dd></div>
+        </dl>
+        <button class="button button-dark detail-add" id="detail-add" type="button">Tambah ke keranjang <span aria-hidden="true">→</span></button>
+      </div>
+    </div>
+  </dialog>
+
   <div class="drawer-backdrop" id="drawer-backdrop" hidden></div>
   <aside class="cart-panel" id="cart-panel" aria-label="Keranjang belanja" aria-hidden="true" inert>
     <div class="cart-header">
