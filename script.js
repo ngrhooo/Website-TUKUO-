@@ -1,0 +1,175 @@
+const products = [
+  { id: 1, name: "Oversized Shirt", category: "Pakaian", size: "M / L", condition: "Sangat baik", price: 85000, image: "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=700&q=85" },
+  { id: 2, name: "Classic Sneakers", category: "Sepatu", size: "42", condition: "Sangat baik", price: 175000, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=85" },
+  { id: 3, name: "Minimal Jacket", category: "Pakaian", size: "L", condition: "Baik", price: 135000, image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=700&q=85" },
+  { id: 4, name: "Everyday Trainers", category: "Sepatu", size: "40", condition: "Sangat baik", price: 160000, image: "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=700&q=85" },
+  { id: 5, name: "Daily Knitwear", category: "Pakaian", size: "M", condition: "Baik", price: 95000, image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=700&q=85" },
+  { id: 6, name: "Retro Street Shoes", category: "Sepatu", size: "41", condition: "Sangat baik", price: 190000, image: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=700&q=85" }
+];
+
+const productGrid = document.querySelector("#product-grid");
+const searchInput = document.querySelector("#search-input");
+const emptyState = document.querySelector("#empty-state");
+const filterButtons = document.querySelectorAll(".filter-button");
+const cartPanel = document.querySelector("#cart-panel");
+const cartBackdrop = document.querySelector("#drawer-backdrop");
+const cartItemsElement = document.querySelector("#cart-items");
+const cartCountElement = document.querySelector("#cart-count");
+const cartSubtotalElement = document.querySelector("#cart-subtotal");
+const toast = document.querySelector("#toast");
+
+let activeCategory = "Semua";
+let cart = [];
+let toastTimer;
+
+function formatPrice(price) {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0
+  }).format(price);
+}
+
+function renderProducts() {
+  const keyword = searchInput.value.trim().toLowerCase();
+  const visibleProducts = products.filter((product) => {
+    const matchesCategory = activeCategory === "Semua" || product.category === activeCategory;
+    const matchesSearch = product.name.toLowerCase().includes(keyword);
+    return matchesCategory && matchesSearch;
+  });
+
+  productGrid.innerHTML = visibleProducts.map((product) => `
+    <article class="product-card">
+      <div class="product-image-wrap">
+        <img class="product-image" src="${product.image}" alt="${product.name}" loading="lazy">
+        <span class="condition-tag">PRE-LOVED</span>
+      </div>
+      <div class="product-details">
+        <div class="product-meta"><span>${product.category}</span><span>Size ${product.size}</span></div>
+        <h3>${product.name}</h3>
+        <div class="product-bottom">
+          <span class="price">${formatPrice(product.price)}</span>
+          <button class="add-button" type="button" data-add="${product.id}">+ Tambah</button>
+        </div>
+      </div>
+    </article>
+  `).join("");
+
+  emptyState.hidden = visibleProducts.length > 0;
+}
+
+function showToast(message) {
+  toast.textContent = message;
+  toast.classList.add("is-visible");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("is-visible"), 2200);
+}
+
+function addToCart(productId) {
+  const selectedProduct = products.find((product) => product.id === productId);
+  const existingItem = cart.find((item) => item.id === productId);
+
+  if (existingItem) {
+    existingItem.quantity += 1;
+  } else {
+    cart.push({ ...selectedProduct, quantity: 1 });
+  }
+
+  renderCart();
+  showToast(`${selectedProduct.name} ditambahkan ke keranjang`);
+}
+
+function updateQuantity(productId, change) {
+  const item = cart.find((cartItem) => cartItem.id === productId);
+  if (!item) return;
+
+  item.quantity += change;
+  cart = cart.filter((cartItem) => cartItem.quantity > 0);
+  renderCart();
+}
+
+function renderCart() {
+  const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+  const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+
+  cartCountElement.textContent = totalItems;
+  cartSubtotalElement.textContent = formatPrice(subtotal);
+
+  if (cart.length === 0) {
+    cartItemsElement.innerHTML = '<p class="cart-empty">Keranjangmu masih kosong.</p>';
+    return;
+  }
+
+  cartItemsElement.innerHTML = cart.map((item) => `
+    <article class="cart-item">
+      <img src="${item.image}" alt="${item.name}" loading="lazy">
+      <div>
+        <h3>${item.name}</h3>
+        <p>${formatPrice(item.price)}</p>
+        <div class="quantity-control" aria-label="Jumlah ${item.name}">
+          <button type="button" data-quantity="-1" data-id="${item.id}" aria-label="Kurangi ${item.name}">−</button>
+          <span>${item.quantity}</span>
+          <button type="button" data-quantity="1" data-id="${item.id}" aria-label="Tambah ${item.name}">+</button>
+        </div>
+      </div>
+      <button class="remove-item" type="button" data-remove="${item.id}" aria-label="Hapus ${item.name}">×</button>
+    </article>
+  `).join("");
+}
+
+function setCartOpen(isOpen) {
+  cartPanel.classList.toggle("is-open", isOpen);
+  cartPanel.setAttribute("aria-hidden", String(!isOpen));
+  cartPanel.inert = !isOpen;
+  cartBackdrop.hidden = !isOpen;
+  document.querySelector("#cart-toggle").setAttribute("aria-expanded", String(isOpen));
+  document.body.style.overflow = isOpen ? "hidden" : "";
+  if (isOpen) document.querySelector("#cart-close").focus();
+}
+
+filterButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    activeCategory = button.dataset.category;
+    filterButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+    renderProducts();
+  });
+});
+
+searchInput.addEventListener("input", renderProducts);
+
+productGrid.addEventListener("click", (event) => {
+  const addButton = event.target.closest("[data-add]");
+  if (addButton) addToCart(Number(addButton.dataset.add));
+});
+
+cartItemsElement.addEventListener("click", (event) => {
+  const quantityButton = event.target.closest("[data-quantity]");
+  const removeButton = event.target.closest("[data-remove]");
+
+  if (quantityButton) {
+    updateQuantity(Number(quantityButton.dataset.id), Number(quantityButton.dataset.quantity));
+  }
+
+  if (removeButton) {
+    cart = cart.filter((item) => item.id !== Number(removeButton.dataset.remove));
+    renderCart();
+  }
+});
+
+document.querySelector("#cart-toggle").addEventListener("click", () => setCartOpen(true));
+document.querySelector("#cart-close").addEventListener("click", () => setCartOpen(false));
+cartBackdrop.addEventListener("click", () => setCartOpen(false));
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && cartPanel.classList.contains("is-open")) setCartOpen(false);
+});
+
+document.querySelector("#checkout-button").addEventListener("click", () => {
+  if (cart.length === 0) {
+    showToast("Tambahkan produk terlebih dahulu.");
+    return;
+  }
+  showToast("Terima kasih! Fitur pembayaran belum tersedia.");
+});
+
+renderProducts();
+renderCart();
