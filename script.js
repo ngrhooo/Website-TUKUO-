@@ -1,10 +1,10 @@
 const products = [
-  { id: 1, name: "Oversized Shirt", category: "Pakaian", size: "M / L", condition: "Sangat baik", price: 85000, image: "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=700&q=85" },
-  { id: 2, name: "Classic Sneakers", category: "Sepatu", size: "42", condition: "Sangat baik", price: 175000, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=85" },
-  { id: 3, name: "Minimal Jacket", category: "Pakaian", size: "L", condition: "Baik", price: 135000, image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=700&q=85" },
-  { id: 4, name: "Everyday Trainers", category: "Sepatu", size: "40", condition: "Sangat baik", price: 160000, image: "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=700&q=85" },
-  { id: 5, name: "Daily Knitwear", category: "Pakaian", size: "M", condition: "Baik", price: 95000, image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=700&q=85" },
-  { id: 6, name: "Retro Street Shoes", category: "Sepatu", size: "41", condition: "Sangat baik", price: 190000, image: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=700&q=85" }
+  { id: 1, name: "Oversized Shirt", category: "Pakaian", size: "M / L", condition: "Sangat baik", description: "Kemeja oversized dengan potongan santai yang mudah dipadukan untuk gaya sehari-hari.", price: 85000, image: "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=700&q=85" },
+  { id: 2, name: "Classic Sneakers", category: "Sepatu", size: "42", condition: "Sangat baik", description: "Sneakers bergaya klasik yang cocok untuk melengkapi outfit kasual.", price: 175000, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=85" },
+  { id: 3, name: "Minimal Jacket", category: "Pakaian", size: "L", condition: "Baik", description: "Jaket dengan desain minimalis untuk tampilan kasual dan praktis.", price: 135000, image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=700&q=85" },
+  { id: 4, name: "Everyday Trainers", category: "Sepatu", size: "40", condition: "Sangat baik", description: "Sepatu trainer nyaman untuk aktivitas dan penampilan sehari-hari.", price: 160000, image: "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=700&q=85" },
+  { id: 5, name: "Daily Knitwear", category: "Pakaian", size: "M", condition: "Baik", description: "Atasan rajut yang memberi tampilan santai dan mudah dipadukan.", price: 95000, image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=700&q=85" },
+  { id: 6, name: "Retro Street Shoes", category: "Sepatu", size: "41", condition: "Sangat baik", description: "Sepatu bergaya retro untuk sentuhan streetwear pada outfit kamu.", price: 190000, image: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=700&q=85" }
 ];
 
 const productGrid = document.querySelector("#product-grid");
@@ -17,6 +17,8 @@ const cartItemsElement = document.querySelector("#cart-items");
 const cartCountElement = document.querySelector("#cart-count");
 const cartSubtotalElement = document.querySelector("#cart-subtotal");
 const toast = document.querySelector("#toast");
+const productDialog = document.querySelector("#product-dialog");
+let activeDetailProduct = null;
 
 let activeCategory = "Semua";
 let cart = [];
@@ -46,7 +48,7 @@ function renderProducts() {
       </div>
       <div class="product-details">
         <div class="product-meta"><span>${product.category}</span><span>Size ${product.size}</span></div>
-        <h3>${product.name}</h3>
+        <h3><button class="product-title" type="button" data-detail="${product.id}">${product.name}</button></h3>
         <div class="product-bottom">
           <span class="price">${formatPrice(product.price)}</span>
           <button class="add-button" type="button" data-add="${product.id}">+ Tambah</button>
@@ -56,6 +58,23 @@ function renderProducts() {
   `).join("");
 
   emptyState.hidden = visibleProducts.length > 0;
+}
+
+function openProductDetail(productId) {
+  const product = products.find((item) => item.id === productId);
+  if (!product) return;
+
+  activeDetailProduct = product;
+  document.querySelector("#detail-image").src = product.image;
+  document.querySelector("#detail-image").alt = product.name;
+  document.querySelector("#detail-category").textContent = product.category;
+  document.querySelector("#detail-name").textContent = product.name;
+  document.querySelector("#detail-price").textContent = formatPrice(product.price);
+  document.querySelector("#detail-description").textContent = product.description;
+  document.querySelector("#detail-size").textContent = product.size;
+  document.querySelector("#detail-condition").textContent = product.condition;
+  document.querySelector("#detail-type").textContent = product.category;
+  productDialog.showModal();
 }
 
 function showToast(message) {
@@ -138,7 +157,9 @@ filterButtons.forEach((button) => {
 searchInput.addEventListener("input", renderProducts);
 
 productGrid.addEventListener("click", (event) => {
+  const detailButton = event.target.closest("[data-detail]");
   const addButton = event.target.closest("[data-add]");
+  if (detailButton) openProductDetail(Number(detailButton.dataset.detail));
   if (addButton) addToCart(Number(addButton.dataset.add));
 });
 
@@ -154,6 +175,16 @@ cartItemsElement.addEventListener("click", (event) => {
     cart = cart.filter((item) => item.id !== Number(removeButton.dataset.remove));
     renderCart();
   }
+});
+
+document.querySelector("#detail-close").addEventListener("click", () => productDialog.close());
+productDialog.addEventListener("click", (event) => {
+  if (event.target === productDialog) productDialog.close();
+});
+document.querySelector("#detail-add").addEventListener("click", () => {
+  if (!activeDetailProduct) return;
+  addToCart(activeDetailProduct.id);
+  productDialog.close();
 });
 
 document.querySelector("#cart-toggle").addEventListener("click", () => setCartOpen(true));
