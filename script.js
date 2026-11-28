@@ -1,11 +1,4 @@
-const products = [
-  { id: 1, name: "Oversized Shirt", category: "Pakaian", size: "M / L", condition: "Sangat baik", description: "Kemeja oversized dengan potongan santai yang mudah dipadukan untuk gaya sehari-hari.", price: 85000, image: "https://raw.githubusercontent.com/ngrhooo/Website-TUKUO-/main/aset_foto/OVS%20SI%20SIZE%2010USED%20VVGC(resmi%20store)100%25%20ORIGINAL%20(AUTHENTIC)PRICE-SOLD%20OUT%20BY%20CODMORE%20INFO%20%26%20D.webp" },
-  { id: 2, name: "Classic Sneakers", category: "Sepatu", size: "42", condition: "Sangat baik", description: "Sneakers bergaya klasik yang cocok untuk melengkapi outfit kasual.", price: 175000, image: "https://raw.githubusercontent.com/ngrhooo/Website-TUKUO-/main/aset_foto/ADIDAS%20SAMBA%20OG%20J%20WHITE%20PINKSIZE%2038BNIBWTFULLSET%20(resmi%20store)%5BBOX%20OG%20%2B%20TAG%20%2B%20SELIMUT%20%5D100%25%20ORI.webp" },
-  { id: 3, name: "Minimal Jacket", category: "Pakaian", size: "L", condition: "Baik", description: "Jaket dengan desain minimalis untuk tampilan kasual dan praktis.", price: 135000, image: "https://raw.githubusercontent.com/ngrhooo/Website-TUKUO-/main/aset_foto/HOODIE%20SI%20SIZE%20XLUSED%20VVGC(resmi%20store)100%25%20ORIGINAL%20(AUTHENTIC)PRICE-2.XXX.XXXMORE%20INFO%20%26%20DETA.webp" },
-  { id: 4, name: "Everyday Trainers", category: "Sepatu", size: "40", condition: "Sangat baik", description: "Sepatu trainer nyaman untuk aktivitas dan penampilan sehari-hari.", price: 160000, image: "https://raw.githubusercontent.com/ngrhooo/Website-TUKUO-/main/aset_foto/ADIDAS%20SPZL%20BLACK%20PINKSIZE%2040USED%20VVGC(resmi%20store)%5BKELENGKAPAN%20SEPATU%20AJA%5D100%25%20ORIGINAL%20(AUTHE.webp" },
-  { id: 5, name: "Daily Knitwear", category: "Pakaian", size: "M", condition: "Baik", description: "Atasan rajut yang memberi tampilan santai dan mudah dipadukan.", price: 95000, image: "https://raw.githubusercontent.com/ngrhooo/Website-TUKUO-/main/aset_foto/CREWNECK%20SI%20SIZE%2012USED%20VVGC(resmi%20store)100%25%20ORIGINAL%20(AUTHENTIC)PRICE-1.XXX.XXXMORE%20INFO%20%26%20DE.webp" },
-  { id: 6, name: "Retro Street Shoes", category: "Sepatu", size: "41", condition: "Sangat baik", description: "Sepatu bergaya retro untuk sentuhan streetwear pada outfit kamu.", price: 190000, image: "https://raw.githubusercontent.com/ngrhooo/Website-TUKUO-/main/aset_foto/ADIDAS%20SPZL%20ORENSIZE%2042USED%20VVGCFULLSET%20(resmi%20store)%5BBOX%20OG%20%2B%20TAG%20%2B%20SELIMUT%20%5D100%25%20ORIGINAL%20(AU.webp" }
-];
+const products = (window.TUKUO_PRODUCTS || []).map(product => ({ ...product, id: Number(product.id), price: Number(product.price), stock: Number(product.stock) }));
 
 const productGrid = document.querySelector("#product-grid");
 const searchInput = document.querySelector("#search-input");
@@ -54,7 +47,7 @@ function renderProducts() {
     <article class="product-card">
       <div class="product-image-wrap">
         <img class="product-image" src="${product.image}" alt="${product.name}" loading="lazy">
-        <span class="condition-tag">PRE-LOVED</span>
+        <span class="condition-tag">${product.stock > 0 ? "PRE-LOVED" : "HABIS"}</span>
       </div>
       <div class="product-details">
         <div class="product-meta"><span>${product.category}</span><span>Size ${product.size}</span></div>
