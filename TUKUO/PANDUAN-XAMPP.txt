@@ -1,0 +1,51 @@
+PANDUAN MENJALANKAN TUKUO! DI XAMPP
+
+1. Ekstrak folder proyek ini ke C:\xampp\htdocs\TUKUO.
+2. Buka XAMPP Control Panel, lalu Start Apache dan MySQL.
+3. Buka http://localhost/phpmyadmin.
+4. Pilih menu Import, pilih file database.sql dari folder TUKUO, lalu klik Go/Import.
+   File ini membuat database tukuo_db dan tabel users.
+5. Pastikan config.php memakai pengaturan MySQL lokal kamu.
+   Default XAMPP biasanya DB_USER=root dan DB_PASS kosong.
+6. Buka http://localhost/TUKUO/register.php untuk membuat akun pertama.
+7. Setelah register berhasil, website otomatis mengarahkan ke halaman Login.
+8. Login dengan email dan password yang baru dibuat. Setelah berhasil, pengguna masuk ke halaman utama TUKUO!.
+9. Untuk lupa password, klik Forgot Password? di Login. Isi email akun, New Password, dan Confirm New Password.
+   Setelah berhasil, pengguna otomatis kembali ke Login dan masuk menggunakan password baru.
+
+ALUR FITUR
+Register -> Login -> Halaman utama TUKUO!
+Login -> Forgot Password? -> New Password -> Login -> Halaman utama TUKUO!
+Login -> Logout -> Halaman utama (pengguna kembali sebagai pengunjung)
+
+CATATAN PENTING TENTANG GANTI PASSWORD
+Sesuai permintaan, fitur New Password tidak memakai OTP atau verifikasi email. Pengguna memasukkan email akun untuk menentukan akun mana yang password-nya diperbarui.
+Karena tidak ada verifikasi kepemilikan email, fitur ini hanya cocok untuk demonstrasi/proyek lokal. Pada website publik, orang yang mengetahui email akun berpotensi mengganti password akun tersebut. Sebelum hosting untuk pengguna sungguhan, sebaiknya tambahkan verifikasi kepemilikan akun.
+
+KEAMANAN DASAR
+- Password disimpan sebagai hash dengan password_hash(), bukan teks asli.
+- Login memeriksa password dengan password_verify().
+- Query database menggunakan prepared statements.
+- Form memakai token CSRF.
+- Email dibuat unik agar satu email tidak mendaftar berkali-kali.
+
+CATATAN PROJECT
+Halaman katalog, pencarian, filter, detail produk, dan keranjang yang sudah ada tetap dipertahankan. Fitur checkout masih berupa simulasi seperti pada project awal.
+
+TAMPILAN LOGIN/REGISTER/NEW PASSWORD:
+- Ukuran panel diperkecil agar tidak memenuhi layar.
+- Warna dibuat hitam-putih/monokrom.
+- Ikon email, kunci, mata, dan ikon dekoratif pada kolom input dihilangkan.
+- Desain halaman utama dan fitur katalog tidak diubah.
+
+FITUR CHECKOUT & QRIS
+1. Pastikan tabel baru sudah dibuat: buka phpMyAdmin, pilih database tukuo_db, tab Import, lalu import ulang database.sql (CREATE TABLE IF NOT EXISTS tidak menghapus data users yang sudah ada). Bisa juga jalankan bagian CREATE TABLE orders dan order_items melalui tab SQL.
+2. Login ke TUKUO!, pilih produk, buka keranjang, lalu klik Lanjutkan.
+3. Isi nama penerima, nomor HP, provinsi, kota/kabupaten, kecamatan, kode pos, dan alamat lengkap.
+4. Pilih QRIS. Jika memilih BCA/BRI/BNI, sistem menampilkan pesan bahwa metode tersebut belum tersedia dan tombol lanjut dinonaktifkan.
+5. Klik Lanjutkan ke Pembayaran untuk melihat QRIS TUKUO.
+6. Setelah membayar, klik Saya Sudah Membayar — Konfirmasi. Sistem membuat tampilan struk dengan kode pesanan dan status Menunggu konfirmasi admin.
+7. Klik Konfirmasi melalui WhatsApp untuk menghubungi admin di 0882005764682. Pelanggan perlu mengirim bukti pembayaran melalui chat WhatsApp.
+Catatan: QRIS pada project adalah QRIS statis yang diunggah pengguna. Pastikan nominal pembayaran dimasukkan secara manual sesuai total pesanan. Sistem belum menerima notifikasi pembayaran otomatis dari bank/penyedia QRIS.
+
+Catatan hosting: GitHub Pages tidak menjalankan PHP atau MySQL. Untuk menggunakan fitur akun, checkout, dan pesanan, jalankan melalui XAMPP atau hosting yang menyediakan PHP dan MySQL.
