@@ -1,7 +1,5 @@
 <?php
 declare(strict_types=1);
-
-// Konfigurasi database lokal XAMPP.
 define("DB_HOST", "localhost");
 define("DB_NAME", "tukuo_db");
 define("DB_USER", "root");
@@ -19,21 +17,20 @@ function db(): PDO {
     }
     return $pdo;
 }
-
 function ensure_session(): void {
-    if (session_status() !== PHP_SESSION_ACTIVE) {
-        session_start();
-    }
-    if (empty($_SESSION["csrf_token"])) {
-        $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
-    }
+    if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+    if (empty($_SESSION["csrf_token"])) $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
 }
-
 function csrf_is_valid(): bool {
     return isset($_POST["csrf_token"], $_SESSION["csrf_token"])
         && hash_equals($_SESSION["csrf_token"], (string)$_POST["csrf_token"]);
 }
-
 function e(string $value): string {
     return htmlspecialchars($value, ENT_QUOTES, "UTF-8");
+}
+function is_admin(): bool {
+    if (!isset($_SESSION["user_id"])) return false;
+    $stmt = db()->prepare("SELECT role FROM users WHERE id = ?");
+    $stmt->execute([$_SESSION["user_id"]]);
+    return $stmt->fetchColumn() === "admin";
 }
