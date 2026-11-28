@@ -48,3 +48,17 @@ FITUR CHECKOUT & QRIS
 6. Setelah membayar, klik Saya Sudah Membayar — Konfirmasi. Sistem membuat tampilan struk dengan kode pesanan dan status Menunggu konfirmasi admin.
 7. Klik Konfirmasi melalui WhatsApp untuk menghubungi admin di 0882005764682. Pelanggan perlu mengirim bukti pembayaran melalui chat WhatsApp.
 Catatan: QRIS pada project adalah QRIS statis yang diunggah pengguna. Pastikan nominal pembayaran dimasukkan secara manual sesuai total pesanan. Sistem belum menerima notifikasi pembayaran otomatis dari bank/penyedia QRIS.
+
+
+PENGATURAN ADMIN TUKUO!
+
+1. Jalankan database.sql seperti biasa untuk membuat database dan tabel awal.
+2. Pilih database tukuo_db di phpMyAdmin, lalu buka tab Import dan jalankan file migrations/2026_11_28_admin_products.sql satu kali.
+3. Jadikan akun terdaftar sebagai admin dengan menjalankan query berikut. Ganti alamat email dengan email akun milikmu:
+
+UPDATE users SET role = 'admin' WHERE email = 'emailkamu@example.com';
+
+4. Login menggunakan akun tersebut. Halaman pengelolaan tersedia di admin.php.
+5. Folder uploads/products harus dapat ditulisi oleh PHP agar foto produk bisa diunggah. Foto JPG, PNG, atau WEBP maksimal 5 MB.
+
+Akun yang mendaftar biasa otomatis memiliki role customer dan tidak dapat membuka halaman admin.
