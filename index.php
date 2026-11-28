@@ -3,6 +3,7 @@ require_once "config.php";
 ensure_session();
 $isLoggedIn = isset($_SESSION["user_id"]);
 $userName = $_SESSION["user_name"] ?? "";
+$products = db()->query("SELECT id,name,category,size,condition_label AS `condition`,description,price,stock,image FROM products WHERE stock > 0 ORDER BY id")->fetchAll();
 ?>
 <!doctype html>
 <html lang="id">
@@ -12,6 +13,7 @@ $userName = $_SESSION["user_name"] ?? "";
   <meta name="description" content="TUKUO! — pilihan pakaian dan sepatu second berkualitas.">
   <title>TUKUO! — Secondhand, First Choice.</title>
   <link rel="stylesheet" href="style.css">
+  <script>window.TUKUO_PRODUCTS = <?= json_encode($products, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;</script>
   <script src="script.js" defer></script>
 </head>
 <body data-logged-in="<?= $isLoggedIn ? "1" : "0" ?>">
@@ -23,6 +25,7 @@ $userName = $_SESSION["user_name"] ?? "";
       <a href="#home">Beranda</a>
       <a href="#koleksi">Koleksi</a>
       <a href="#tentang">Tentang</a>
+      <?php if (is_admin()): ?><a href="admin.php">Admin</a><?php endif; ?>
     </nav>
     <div class="account-area">
       <?php if ($isLoggedIn): ?>
