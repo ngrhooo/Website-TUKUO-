@@ -1,0 +1,133 @@
+<?php
+require_once "config.php";
+ensure_session();
+$isLoggedIn = isset($_SESSION["user_id"]);
+$userName = $_SESSION["user_name"] ?? "";
+?>
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TUKUO! — pilihan pakaian dan sepatu second berkualitas.">
+  <title>TUKUO! — Secondhand, First Choice.</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body data-logged-in="<?= $isLoggedIn ? "1" : "0" ?>">
+  <div class="announcement">SECONDHAND, FIRST CHOICE. &nbsp; | &nbsp; TEMUKAN BARANG FAVORITMU.</div>
+
+  <header class="site-header">
+    <a class="logo" href="#home" aria-label="TUKUO beranda">TUKUO<span>!</span></a>
+    <nav class="main-nav" aria-label="Navigasi utama">
+      <a href="#home">Beranda</a>
+      <a href="#koleksi">Koleksi</a>
+      <a href="#tentang">Tentang</a>
+    </nav>
+    <div class="account-area">
+      <?php if ($isLoggedIn): ?>
+        <span class="welcome-user">Hai, <?= htmlspecialchars($userName, ENT_QUOTES, "UTF-8") ?></span>
+        <form action="logout.php" method="post" class="logout-form">
+          <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION["csrf_token"] ?? "", ENT_QUOTES, "UTF-8") ?>">
+          <button class="account-link" type="submit">Keluar</button>
+        </form>
+      <?php else: ?>
+        <a class="account-link" href="login.php">Masuk</a>
+        <a class="account-link account-link-primary" href="register.php">Daftar</a>
+      <?php endif; ?>
+    </div>
+    <button class="cart-trigger" id="cart-toggle" type="button" aria-controls="cart-panel" aria-expanded="false">
+      Keranjang <span class="cart-count" id="cart-count">0</span>
+    </button>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-copy">
+        <p class="eyebrow">PRE-LOVED GOODS · SELECTED WITH CARE</p>
+        <h1>Gaya keren.<br><span>Harga lebih bersahabat.</span></h1>
+        <p class="hero-description">Temukan pakaian dan sepatu second pilihan yang siap menemani gaya sehari-harimu.</p>
+        <a class="button button-light" href="#koleksi">Jelajahi koleksi <span aria-hidden="true">↘</span></a>
+      </div>
+      <div class="hero-art" role="img" aria-label="Pilihan pakaian secondhand bernuansa monokrom">
+        <div class="hero-stamp">GOOD<br>FINDS<br>ONLY.</div>
+        <span class="hero-index">EST. 2026 — TUKUO!</span>
+      </div>
+      <div class="hero-bottom"><span>QUALITY FINDS</span><span>LESS WASTE, MORE STYLE</span><span>001 — 006</span></div>
+    </section>
+
+    <section class="collection section-wrap" id="koleksi">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">THE CURRENT DROP</p>
+          <h2>Temukan favoritmu<span>.</span></h2>
+        </div>
+        <p class="section-note">Barang pilihan, harga yang masuk akal.</p>
+      </div>
+
+      <div class="shop-tools">
+        <div class="filters" role="group" aria-label="Filter kategori">
+          <button class="filter-button is-active" type="button" data-category="Semua">Semua</button>
+          <button class="filter-button" type="button" data-category="Pakaian">Pakaian</button>
+          <button class="filter-button" type="button" data-category="Sepatu">Sepatu</button>
+        </div>
+        <label class="search-box">
+          <span class="sr-only">Cari produk</span>
+          <input id="search-input" type="search" placeholder="Cari barang..." autocomplete="off">
+          <span aria-hidden="true">⌕</span>
+        </label>
+      </div>
+
+      <div class="product-grid" id="product-grid" aria-live="polite"></div>
+      <p class="empty-state" id="empty-state" hidden>Produk tidak ditemukan. Coba kata kunci lain.</p>
+    </section>
+
+    <section class="manifesto" id="tentang">
+      <p class="eyebrow">WHY TUKUO!</p>
+      <h2>Good style deserves<br> a second life<span>.</span></h2>
+      <p>Kami percaya barang bagus masih punya banyak cerita. TUKUO! mengkurasi pakaian dan sepatu second agar kamu bisa tampil percaya diri sekaligus berbelanja lebih bijak.</p>
+      <a href="#koleksi" class="text-link">LIHAT KOLEKSI <span aria-hidden="true">↗</span></a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a class="logo logo-footer" href="#home">TUKUO<span>!</span></a>
+    <p>SECONDHAND, FIRST CHOICE.</p>
+    <p>© 2026 TUKUO! — Made for good finds.</p>
+  </footer>
+
+  <dialog class="product-dialog" id="product-dialog" aria-labelledby="detail-name">
+    <button class="detail-close" id="detail-close" type="button" aria-label="Tutup detail">×</button>
+    <div class="detail-layout">
+      <div class="detail-image-wrap"><img id="detail-image" src="" alt=""></div>
+      <div class="detail-copy">
+        <p class="eyebrow" id="detail-category"></p>
+        <h2 id="detail-name"></h2>
+        <p class="detail-price" id="detail-price"></p>
+        <p class="detail-description" id="detail-description"></p>
+        <dl class="detail-specs">
+          <div><dt>Ukuran</dt><dd id="detail-size"></dd></div>
+          <div><dt>Kondisi</dt><dd id="detail-condition"></dd></div>
+          <div><dt>Kategori</dt><dd id="detail-type"></dd></div>
+        </dl>
+        <button class="button button-dark detail-add" id="detail-add" type="button">Tambah ke keranjang <span aria-hidden="true">→</span></button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="drawer-backdrop" id="drawer-backdrop" hidden></div>
+  <aside class="cart-panel" id="cart-panel" aria-label="Keranjang belanja" aria-hidden="true" inert>
+    <div class="cart-header">
+      <div><p class="eyebrow">YOUR SELECTED ITEMS</p><h2>Keranjang<span>.</span></h2></div>
+      <button class="close-cart" id="cart-close" type="button" aria-label="Tutup keranjang">×</button>
+    </div>
+    <div class="cart-items" id="cart-items"></div>
+    <div class="cart-footer">
+      <div class="subtotal-row"><span>Subtotal</span><strong id="cart-subtotal">Rp0</strong></div>
+      <button class="button button-dark checkout-button" id="checkout-button" type="button">Lanjutkan <span aria-hidden="true">→</span></button>
+      <p class="cart-caption">Lanjutkan untuk mengisi alamat dan memilih metode pembayaran.</p>
+    </div>
+  </aside>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
