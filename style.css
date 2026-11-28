@@ -323,8 +323,11 @@ button { color: inherit; }
   position: fixed;
   z-index: -1;
   inset: 0;
-  background: url('https://i.pinimg.com/1200x/6d/0a/96/6d0a96543f29d1eab9ca909993dacf9f.jpg') center/cover no-repeat;
-  filter: grayscale(1) brightness(.38);
+  background-image: url('aset_foto/1c35cd207efa98947b57e46c2cf64074.jpg');
+  background-repeat: repeat;
+  background-size: 150px auto;
+  background-position: center;
+  filter: grayscale(1) invert(1) brightness(.38);
 }
 .auth-brand { margin: 0 auto 15px; }
 .auth-brand-cart { display: none; }
