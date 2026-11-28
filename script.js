@@ -27,6 +27,10 @@ try {
 } catch (_) { cart = []; }
 let toastTimer;
 
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"\']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\\\"": "&quot;", "\\\'": "&#39;" }[char]));
+}
+
 function formatPrice(price) {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -46,12 +50,12 @@ function renderProducts() {
   productGrid.innerHTML = visibleProducts.map((product) => `
     <article class="product-card">
       <div class="product-image-wrap">
-        <img class="product-image" src="${product.image}" alt="${product.name}" loading="lazy">
+        <img class="product-image" src="${escapeHTML(product.image)}" alt="${escapeHTML(product.name)}" loading="lazy">
         <span class="condition-tag">${product.stock > 0 ? "PRE-LOVED" : "HABIS"}</span>
       </div>
       <div class="product-details">
-        <div class="product-meta"><span>${product.category}</span><span>Size ${product.size}</span></div>
-        <h3><button class="product-title" type="button" data-detail="${product.id}">${product.name}</button></h3>
+        <div class="product-meta"><span>${escapeHTML(product.category)}</span><span>Size ${escapeHTML(product.size)}</span></div>
+        <h3><button class="product-title" type="button" data-detail="${product.id}">${escapeHTML(product.name)}</button></h3>
         <div class="product-bottom">
           <span class="price">${formatPrice(product.price)}</span>
           <button class="add-button" type="button" data-add="${product.id}">+ Tambah</button>
@@ -125,9 +129,9 @@ function renderCart() {
 
   cartItemsElement.innerHTML = cart.map((item) => `
     <article class="cart-item">
-      <img src="${item.image}" alt="${item.name}" loading="lazy">
+      <img src="${escapeHTML(item.image)}" alt="${escapeHTML(item.name)}" loading="lazy">
       <div>
-        <h3>${item.name}</h3>
+        <h3>${escapeHTML(item.name)}</h3>
         <p>${formatPrice(item.price)}</p>
         <div class="quantity-control" aria-label="Jumlah ${item.name}">
           <button type="button" data-quantity="-1" data-id="${item.id}" aria-label="Kurangi ${item.name}">−</button>
