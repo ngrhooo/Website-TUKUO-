@@ -48,6 +48,7 @@ $email = $_SESSION["user_email"] ?? "";
 </div>
 </form></main>
 <script>
+const escapeHTML=value=>String(value).replace(/[&<>"\']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","\'":"&#39;"}[char]));
 const money=n=>new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR",maximumFractionDigits:0}).format(n);
 let items=[]; try{items=JSON.parse(localStorage.getItem("tukuo_cart")||"[]")}catch(e){}
 const alertBox=document.getElementById("checkout-alert");
@@ -55,7 +56,7 @@ const submit=document.getElementById("checkout-submit");
 if(!Array.isArray(items)||!items.length){alertBox.hidden=false;alertBox.textContent="Keranjang kosong. Silakan pilih barang terlebih dahulu.";submit.disabled=true;}
 else{
  const total=items.reduce((s,x)=>s+(Number(x.price)||0)*(Number(x.quantity)||0),0);
- document.getElementById("checkout-items").innerHTML=items.map(x=>`<div class="flow-item"><img src="${String(x.image).replace(/"/g,"")}" alt=""><div><h3>${String(x.name).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}</h3><p>${money(Number(x.price))} × ${Number(x.quantity)}</p></div><strong>${money(Number(x.price)*Number(x.quantity))}</strong></div>`).join("");
+ document.getElementById("checkout-items").innerHTML=items.map(x=>`<div class="flow-item"><img src="${escapeHTML(x.image)}" alt=""><div><h3>${escapeHTML(x.name)}</h3><p>${money(Number(x.price))} × ${Number(x.quantity)}</p></div><strong>${money(Number(x.price)*Number(x.quantity))}</strong></div>`).join("");
  document.getElementById("checkout-subtotal").textContent=money(total);
  document.getElementById("checkout-total").textContent=money(total);
 }
