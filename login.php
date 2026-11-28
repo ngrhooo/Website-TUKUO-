@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!csrf_is_valid()) {
         $error = "Sesi formulir tidak valid. Muat ulang halaman dan coba lagi.";
     } else {
-        $stmt = db()->prepare("SELECT id, name, email, password FROM users WHERE email = :email LIMIT 1");
+        $stmt = db()->prepare("SELECT id, name, email, password, role FROM users WHERE email = :email LIMIT 1");
         $stmt->execute([":email" => $email]);
         $user = $stmt->fetch();
         if ($user && password_verify($password, $user["password"])) {
@@ -23,8 +23,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $_SESSION["user_id"] = (int)$user["id"];
             $_SESSION["user_name"] = $user["name"];
             $_SESSION["user_email"] = $user["email"];
+            $_SESSION["user_role"] = $user["role"];
             $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
-            header("Location: index.php");
+            header("Location: " . ($user["role"] === "admin" ? "admin.php" : "index.php"));
             exit;
         }
         $error = "Email atau password belum sesuai.";
