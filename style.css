@@ -36,7 +36,9 @@ button { color: inherit; }
 .button-light:hover { background: #d7d7d7; }
 .button-dark { background: #111; color: #fff; }
 .button-dark:hover { background: #333; }
-.hero-art { position: absolute; top: 0; right: 0; width: 44%; height: 100%; background: linear-gradient(90deg, #111 0%, rgba(17,17,17,.22) 40%, rgba(17,17,17,.08) 100%), url('https://i.pinimg.com/1200x/6d/0a/96/6d0a96543f29d1eab9ca909993dacf9f.jpg') center 42% / cover; filter: grayscale(1); opacity: .82; }
+.hero-art { position: absolute; top: 0; right: 0; width: 44%; height: 100%; overflow: hidden; background: #111; opacity: .9; isolation: isolate; }
+.hero-art::before { content: ""; position: absolute; z-index: 0; inset: 0; background-image: url('aset_foto/1c35cd207efa98947b57e46c2cf64074.jpg'); background-repeat: repeat; background-size: 142px auto; background-position: center; filter: grayscale(1) invert(1); opacity: .3; }
+.hero-art > * { z-index: 1; }
 .hero-stamp { position: absolute; top: 21%; right: 17%; width: 126px; height: 126px; display: grid; place-content: center; border: 1px solid rgba(255,255,255,.75); border-radius: 50%; text-align: center; font-size: 17px; font-weight: 800; line-height: 1.05; letter-spacing: -.04em; transform: rotate(11deg); }
 .hero-index { position: absolute; right: 28px; bottom: 25px; font-size: 8px; letter-spacing: .16em; }
 .hero-bottom { position: absolute; right: 7.2%; bottom: 21px; left: 7.2%; display: flex; justify-content: space-between; color: #8b8b8b; font-size: 8px; letter-spacing: .13em; }
